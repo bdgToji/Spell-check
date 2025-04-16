@@ -1,0 +1,77 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 2rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.hero-section {
+    padding: 5rem 0;
+}
+
+.signup-btn {
+    background-color: #ff5a79;
+    border-color: #ff5a79;
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.login-btn {
+    background-color: #6aefcf;
+    border-color: #6aefcf;
+    color: #333;
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.signup-free-btn {
+    background-color: #ff5a79;
+    border-color: #ff5a79;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+}
+
+.highlight {
+    color: #0d6a55;
+    font-weight: bold;
+}
+
+.page-divider {
+    height: 4px;
+    background: linear-gradient(90deg, white, #6aefcf, white);
+    margin: 0;
+}
+
+.illustration {
+    max-width: 100%;
+    height: auto;
+}
+
+.social-icons a {
+    font-size: 1.8rem;
+    margin-left: 15px;
+    color: inherit;
+}
+
+.social-icons .fa-linkedin {
+    color: #0077b5;
+}
+
+.social-icons .fa-facebook {
+    color: #1877f2;
+}
+
+.social-icons .fa-instagram {
+    color: #e1306c;
+}
+
+.stats {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 3rem 0;
+    text-align: center;
+}

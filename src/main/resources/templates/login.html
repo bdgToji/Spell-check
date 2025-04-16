@@ -1,0 +1,32 @@
+<th:block>
+    <div class="container d-flex justify-content-center align-items-center mt-5">
+        <div class="card shadow-lg m-3" style="width: 100%; max-width: 400px;">
+            <div class="card-body">
+                <h2 class="text-center mb-4">User login</h2>
+                <p class="text-center mb-4">Enter your username and password</p>
+
+                <form action="/perform_login" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn login-btn">Login</button>
+                    </div>
+                </form>
+
+                <div class="error mt-3 text-center">
+                    <p th:if="${param.error}" class="text-danger">Invalid username or password!</p>
+                    <p th:if="${param.logout}" class="text-success">You have been logged out.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
