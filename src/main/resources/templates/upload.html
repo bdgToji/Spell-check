@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<th:block th:fragment="home-content">
+
+    <div class="container py-5">
+        <!-- Center the text columns -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h4>Unlimited &amp; Fast Processing</h4>
+                <p>
+                    You can upload an unlimited number of documents with lightning-fast
+                    processing. Our AI analyzes and corrects your text in seconds,
+                    ensuring accurate and efficient results every time.
+                </p>
+                <h2>Upload Document</h2>
+                <p>
+                    Upload your document or enter text below to analyze and correct
+                    spelling and grammar mistakes with AI
+                </p>
+
+                <!-- Center the form itself -->
+                <form action="/upload" method="post" class="d-flex flex-column align-items-center">
+                    <div class="w-100 w-md-75 mb-3 text-start">
+                        <p class="text-center mb-2">or</p>
+                        <label for="textInput" class="form-label">Enter your text here:</label>
+                        <textarea
+                                class="form-control"
+                                name="textInput"
+                                id="textInput"
+                                rows="10"
+                                placeholder="Type or paste your text..."
+                        ></textarea>
+                    </div>
+                    <button class="btn signup-btn text-white px-5" type="submit">
+                        Check
+                    </button>
+                </form>
+
+                <!-- Display original and corrected text -->
+                <div th:if="${originalText}">
+                    <h3>Original Text:</h3>
+                    <pre th:text="${originalText}"></pre>
+                </div>
+
+                <div th:if="${correctedText}">
+                    <h3>Corrected Text:</h3>
+                    <pre th:text="${correctedText}"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>
+
+
+
+
+
+
+
