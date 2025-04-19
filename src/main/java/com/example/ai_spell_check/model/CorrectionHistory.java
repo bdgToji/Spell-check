@@ -26,7 +26,7 @@ public class CorrectionHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    CorrectionHistory(User user, Long itemId, ItemType itemType){
+    public CorrectionHistory(User user, Long itemId, ItemType itemType){
         this.user = user;
         this.itemId = itemId;
         this.itemType = itemType;
