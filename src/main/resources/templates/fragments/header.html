@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
 </head>
@@ -9,13 +10,24 @@
         <div class="container">
             <a class="navbar-brand" href="/">Spell Check</a>
             <div class="ms-auto">
-                <a href="/register" class="btn signup-btn text-white me-2">Sign up</a>
-                <a href="/login" class="btn login-btn">Login</a>
+                <div sec:authorize="isAuthenticated()">
+                    <a href="/text/upload" class="btn signup-btn text-white me-2">Text</a>
+                    <a href="/document/upload" class="btn signup-btn text-white me-2">Document</a>
+                    <a href="/history" class="btn signup-btn text-white me-2">History</a>
+                    <a href="/profile" class="btn signup-btn text-white me-2">My profile</a>
+                    <a href="/logout" class="btn signup-btn text-white me-2">Logout</a>
+                </div>
+
+                <div sec:authorize="isAnonymous()">
+                    <a href="/register" class="btn signup-btn text-white me-2">Sign up</a>
+                    <a href="/login" class="btn login-btn">Login</a>
+                </div>
             </div>
         </div>
     </nav>
 
     <div class="page-divider"></div>
 </header>
+
 </body>
 </html>

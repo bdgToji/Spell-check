@@ -1,46 +1,97 @@
 package com.example.ai_spell_check.service;
 
-import org.springframework.http.*;
+import com.example.ai_spell_check.model.response.DocumentUploadResponse;
+import com.example.ai_spell_check.model.response.TextEntryResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
 public class OpenAIService {
 
-    private final String apiKey = System.getenv("OPENAI_API_KEY");
+    private final ChatClient chatClient;
 
-    public String fixGrammar(String text) {
-        if (apiKey == null || apiKey.isBlank()) {
-            return "Error: OpenAI API key not found in environment variables.";
-        }
-
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://api.openai.com/v1/chat/completions";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(apiKey);
-
-        Map<String, Object> userMessage = new HashMap<>();
-        userMessage.put("role", "user");
-        userMessage.put("content", "Fix the grammar of this: " + text);
-
-        Map<String, Object> body = new HashMap<>();
-        body.put("model", "gpt-3.5-turbo");
-        body.put("messages", List.of(userMessage));
-        body.put("temperature", 0.7);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-            List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
-            Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-            return (String) message.get("content");
-        } catch (Exception e) {
-            return "Error calling OpenAI API: " + e.getMessage();
-        }
+    public OpenAIService(ChatClient chatClient) {
+        this.chatClient = chatClient;
     }
+
+    public TextEntryResponse returnCorrectedText(String originalText) throws JsonProcessingException {
+        String promptText = String.format(
+                "I will send you a text and I want you to check if it contains any spelling or grammar errors.\n" +
+                        "Return a JSON in this format:\n" +
+                        "{\n" +
+                        "  \"correct\": true,\n" +
+                        "  \"correctedText\": \"same as original text\"\n" +
+                        "}\n\n" +
+                        "If there are errors that need correction, return:\n" +
+                        "{\n" +
+                        "  \"correct\": false,\n" +
+                        "  \"correctedText\": \"corrected version of the text\"\n" +
+                        "}\n\n" +
+                        "Set \"correct\" to true ONLY if the original text has no errors whatsoever.\n\n" +
+                        "Text: \"%s\"",
+                originalText
+        );
+
+        Prompt prompt = new Prompt(List.of(new UserMessage(promptText)));
+        ChatResponse response = chatClient.call(prompt);
+        String content = response.getResult().getOutput().getContent();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.readValue(content, TextEntryResponse.class);
+    }
+
+    public DocumentUploadResponse returnCorrectedDocument(MultipartFile originalFile) throws IOException {
+        String fileContent;
+
+        // .pdf
+        if (originalFile.getContentType() != null && originalFile.getContentType().equals("application/pdf")) {
+            try (PDDocument document = PDDocument.load(originalFile.getInputStream())) {
+                PDFTextStripper stripper = new PDFTextStripper();
+                fileContent = stripper.getText(document);
+            }
+        } else {
+           //.txt
+            fileContent = new String(originalFile.getBytes());
+        }
+
+        String promptText = String.format(
+                "I will send you a text from a document and I want you to check if it contains any spelling or grammar errors.\n" +
+                        "Return a JSON in this format:\n" +
+                        "{\n" +
+                        "  \"correct\": true,\n" +
+                        "  \"correctedContent\": \"same as original text\"\n" +
+                        "}\n\n" +
+                        "If there are errors that need correction, return:\n" +
+                        "{\n" +
+                        "  \"correct\": false,\n" +
+                        "  \"correctedContent\": \"corrected version of the text\"\n" +
+                        "}\n\n" +
+                        "Set \"correct\" to true ONLY if the original text has no errors whatsoever.\n\n" +
+                        "Document content: \"%s\"",
+                fileContent
+        );
+
+        Prompt prompt = new Prompt(List.of(new UserMessage(promptText)));
+        ChatResponse response = chatClient.call(prompt);
+        String content = response.getResult().getOutput().getContent();
+
+        ObjectMapper mapper = new ObjectMapper();
+        DocumentUploadResponse result = mapper.readValue(content, DocumentUploadResponse.class);
+        result.setFileName(originalFile.getOriginalFilename());
+
+        return result;
+    }
+
 }

@@ -15,11 +15,13 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String fileName;
+//    @Column(columnDefinition = "TEXT")
+//    private String originalContent;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String correctedContent;
 
-    @Column(columnDefinition = "TEXT")
-    private String originalContent;
+    private boolean isCorrect;
 
     @Column(length = 10)
     private String languageCode;
@@ -28,8 +30,8 @@ public class Document {
     @CreationTimestamp
     private LocalDateTime uploadDate;
 
-    @Column(columnDefinition = "TEXT")
-    private String correctedContent;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DocumentFile originalFile;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DocumentFile correctedFile;
@@ -38,9 +40,10 @@ public class Document {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Document(String fileName, String originalContent, String languageCode){
-        this.fileName = fileName;
-        this.languageCode = languageCode;
-        this.originalContent = originalContent;
+    public Document(DocumentFile originalFile, DocumentFile correctedFile, User user, boolean isCorrect){
+        this.originalFile = originalFile;
+        this.correctedFile = correctedFile;
+        this.user = user;
+        this.isCorrect = isCorrect;
     }
 }

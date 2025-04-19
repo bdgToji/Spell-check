@@ -21,6 +21,8 @@ public class TextEntry {
     @Column(columnDefinition = "TEXT")
     private String correctedContent;
 
+    private boolean isCorrect;
+
     @Column(length = 10)
     private String languageCode;
 
@@ -32,8 +34,10 @@ public class TextEntry {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public TextEntry(String originalContent, String languageCode){
+    public TextEntry(String originalContent, String correctedContent, User user, boolean isCorrect){
         this.originalContent = originalContent;
-        this.languageCode = languageCode;
+        this.correctedContent = correctedContent;
+        this.user = user;
+        this.isCorrect = isCorrect;
     }
 }
