@@ -16,11 +16,14 @@ public class DocumentFile {
 
     private String fileName;
 
+    private Long fileSize;
+
     @Lob
     private byte[] content;
 
-    public DocumentFile(String fileName, byte[] content) {
+    public DocumentFile(String fileName,Long fileSize, byte[] content) {
         this.fileName = fileName;
+        this.fileSize = fileSize;
         this.content = content;
     }
 }
