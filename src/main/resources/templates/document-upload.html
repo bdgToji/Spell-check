@@ -15,9 +15,22 @@
 
                 <form action="/document/upload" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
                     <div class="w-100 w-md-75 mb-3 text-start">
-                        <label for="documentFile" class="form-label">Upload your document here:</label>
-                        <input id="documentFile" name="documentFile" type="file" accept="application/pdf">
+                        <label for="languageCode" class="form-label">Select language:</label>
+                        <select class="form-select mb-3" name="languageCode" id="languageCode">
+                            <option th:each="language : ${languageList}"
+                                    th:value="${language.code}"
+                                    th:text="${language.name}"
+                                    th:selected="${language.code == 'en' || (selectedLanguage != null && selectedLanguage == language.code)}">
+                                English
+                            </option>
+                        </select>
                     </div>
+
+                    <div class="w-100 w-md-75 mb-3 text-start">
+                        <label for="documentFile" class="form-label">Upload your document here:</label>
+                        <input id="documentFile" name="documentFile" type="file" accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                    </div>
+
                     <button class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>

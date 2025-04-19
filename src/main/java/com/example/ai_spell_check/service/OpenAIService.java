@@ -25,9 +25,10 @@ public class OpenAIService {
         this.chatClient = chatClient;
     }
 
-    public TextEntryResponse returnCorrectedText(String originalText) throws JsonProcessingException {
+    public TextEntryResponse returnCorrectedText(String originalText, String languageCode) throws JsonProcessingException {
         String promptText = String.format(
                 "I will send you a text and I want you to check if it contains any spelling or grammar errors.\n" +
+                        "The language of the text is: \"%s\".\n" +
                         "Return a JSON in this format:\n" +
                         "{\n" +
                         "  \"correct\": true,\n" +
@@ -40,7 +41,7 @@ public class OpenAIService {
                         "}\n\n" +
                         "Set \"correct\" to true ONLY if the original text has no errors whatsoever.\n\n" +
                         "Text: \"%s\"",
-                originalText
+                languageCode, originalText
         );
 
         Prompt prompt = new Prompt(List.of(new UserMessage(promptText)));
@@ -52,7 +53,7 @@ public class OpenAIService {
         return mapper.readValue(content, TextEntryResponse.class);
     }
 
-    public DocumentUploadResponse returnCorrectedDocument(MultipartFile originalFile) throws IOException {
+    public DocumentUploadResponse returnCorrectedDocument(MultipartFile originalFile, String languageCode) throws IOException {
         String fileContent;
 
         // .pdf
@@ -68,6 +69,7 @@ public class OpenAIService {
 
         String promptText = String.format(
                 "I will send you a text from a document and I want you to check if it contains any spelling or grammar errors.\n" +
+                        "The language of the text is: \"%s\".\n" +
                         "Return a JSON in this format:\n" +
                         "{\n" +
                         "  \"correct\": true,\n" +
@@ -80,8 +82,9 @@ public class OpenAIService {
                         "}\n\n" +
                         "Set \"correct\" to true ONLY if the original text has no errors whatsoever.\n\n" +
                         "Document content: \"%s\"",
-                fileContent
+                languageCode, fileContent
         );
+
 
         Prompt prompt = new Prompt(List.of(new UserMessage(promptText)));
         ChatResponse response = chatClient.call(prompt);

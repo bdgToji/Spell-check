@@ -23,9 +23,6 @@ public class TextEntry {
 
     private boolean isCorrect;
 
-    @Column(length = 10)
-    private String languageCode;
-
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime creationDate;
@@ -34,7 +31,11 @@ public class TextEntry {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public TextEntry(String originalContent, String correctedContent, User user, boolean isCorrect){
+    @ManyToOne
+    private Language languageCode;
+
+    public TextEntry(Language languageCode, String originalContent, String correctedContent, User user, boolean isCorrect){
+        this.languageCode = languageCode;
         this.originalContent = originalContent;
         this.correctedContent = correctedContent;
         this.user = user;
