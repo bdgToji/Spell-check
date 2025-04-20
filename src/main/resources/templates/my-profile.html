@@ -1,0 +1,66 @@
+<th:block>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5 mb-4">
+                <div class="card shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">Email or username update</h5>
+
+                        <form action="/profile/update-info" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Username"
+                                       th:value="${user.getUsername()}"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control"
+                                       placeholder="Email"
+                                       th:value="${user.getEmail()}"
+                                       required>
+                            </div>
+                            <br>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn signup-btn">Update</button>
+                            </div>
+                        </form>
+
+                        <div class="error mt-3 text-center">
+                            <p th:if="${param.error}" class="text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5 mb-4">
+                <div class="card shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">Password Update</h5>
+
+                        <form action="/profile/update-password" method="post">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm password" required>
+                            </div>
+                            <br>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn signup-btn">Update</button>
+                            </div>
+                        </form>
+
+                        <div class="error mt-3 text-center">
+                            <p th:if="${passwordError}" class="text-danger" th:text="${passwordError}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

@@ -3,26 +3,51 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
 <header th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container">
             <a class="navbar-brand" href="/">Spell Check</a>
-            <div class="ms-auto">
-                <div sec:authorize="isAuthenticated()">
-                    <a href="/text/upload" class="btn signup-btn text-white me-2">Text</a>
-                    <a href="/document/upload" class="btn signup-btn text-white me-2">Document</a>
-                    <a href="/history" class="btn signup-btn text-white me-2">History</a>
-                    <a href="/profile" class="btn signup-btn text-white me-2">My profile</a>
-                    <a href="/logout" class="btn signup-btn text-white me-2">Logout</a>
-                </div>
 
-                <div sec:authorize="isAnonymous()">
-                    <a href="/register" class="btn signup-btn text-white me-2">Sign up</a>
-                    <a href="/login" class="btn login-btn">Login</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                    aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-            </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1">
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a href="/text/upload" class="btn signup-btn text-white me-2">Text</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a href="/document/upload" class="btn signup-btn text-white me-2">Document</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a href="/history" class="btn signup-btn text-white me-2">History</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a href="/profile" class="btn signup-btn text-white me-2">My profile</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a href="/logout" class="btn signup-btn text-white me-2">Logout</a>
+                        </li>
+
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a href="/register" class="btn signup-btn text-white me-2">Sign up</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a href="/login" class="btn login-btn">Login</a>
+                        </li>
+                    </ul>
+                </div>
         </div>
     </nav>
 
