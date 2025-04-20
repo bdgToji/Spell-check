@@ -1,5 +1,13 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 80px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 .navbar-brand {
@@ -74,4 +82,58 @@ body {
     font-weight: 500;
     margin: 3rem 0;
     text-align: center;
+}
+
+.offcanvas-end {
+    max-width: 250px;
+}
+
+.navbar-nav {
+    text-align: left;
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 991px) {
+    .navbar .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-right: 0 !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-nav {
+        flex-direction: row;
+        margin-left: auto;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 8px;
+        margin-bottom: 0;
+    }
+
+    .navbar-nav .btn {
+        display: inline-block;
+        width: auto;
+        min-width: fit-content;
+        white-space: nowrap;
+    }
+
+    .navbar-brand {
+        margin-right: auto;
+    }
+
+    .navbar > .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .offcanvas-body {
+        justify-content: flex-end;
+    }
 }
