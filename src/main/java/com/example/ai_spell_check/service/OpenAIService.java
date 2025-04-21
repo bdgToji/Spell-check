@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -65,24 +67,35 @@ public class OpenAIService {
                 PDFTextStripper stripper = new PDFTextStripper();
                 fileContent = stripper.getText(document);
             }
-        } else {
-           //.txt
+        }
+        // .docx
+        else if (originalFile.getContentType() != null &&
+                originalFile.getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+            try (XWPFDocument document = new XWPFDocument(originalFile.getInputStream())) {
+                XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+                fileContent = extractor.getText();
+            }
+        }
+        // .txt and others
+        else {
             fileContent = new String(originalFile.getBytes());
         }
 
         String promptText = String.format(
                 "I will send you a text from a document and I want you to check if it contains any spelling or grammar errors.\n" +
                         "The language of the text is: \"%s\".\n" +
+                        "Your task is to correct ALL spelling and grammar errors while preserving the original meaning.\n" +
                         "Return a JSON in this format:\n" +
                         "{\n" +
                         "  \"correct\": true,\n" +
-                        "  \"correctedContent\": \"same as original text\"\n" +
+                        "  \"correctedContent\": \"exact same text as the original\"\n" +
                         "}\n\n" +
                         "If there are errors that need correction, return:\n" +
                         "{\n" +
                         "  \"correct\": false,\n" +
-                        "  \"correctedContent\": \"corrected version of the text\"\n" +
+                        "  \"correctedContent\": \"fully corrected version of the text with all spelling and grammar errors fixed\"\n" +
                         "}\n\n" +
+                        "Important: Always include the full text in the correctedContent field, never just a comment about the errors.\n" +
                         "Set \"correct\" to true ONLY if the original text has no errors whatsoever.\n\n" +
                         "Document content: \"%s\"",
                 languageCode, fileContent

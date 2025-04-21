@@ -1,5 +1,6 @@
 package com.example.ai_spell_check.model;
 
+import com.example.ai_spell_check.model.enums.FileType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,30 +16,33 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    private Language language;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private DocumentFile originalFile;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private DocumentFile correctedFile;
+
+    @ManyToOne
+    private User user;
+
     private boolean isCorrect;
 
-    @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime uploadDate;
 
-    @ManyToOne
-    private Language languageCode;
+    @Enumerated(EnumType.STRING)
+    private FileType fileType = FileType.PDF;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DocumentFile originalFile;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DocumentFile correctedFile;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    public Document(Language languageCode, DocumentFile originalFile, DocumentFile correctedFile, User user, boolean isCorrect){
-        this.languageCode = languageCode;
+    public Document(Language language, DocumentFile originalFile, DocumentFile correctedFile, User user, boolean isCorrect) {
+        this.language = language;
         this.originalFile = originalFile;
         this.correctedFile = correctedFile;
         this.user = user;
         this.isCorrect = isCorrect;
     }
+
+
 }
