@@ -15,6 +15,8 @@ public class TextEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String originalContent;
 
@@ -34,8 +36,9 @@ public class TextEntry {
     @ManyToOne
     private Language languageCode;
 
-    public TextEntry(Language languageCode, String originalContent, String correctedContent, User user, boolean isCorrect){
+    public TextEntry(Language languageCode, String title, String originalContent, String correctedContent, User user, boolean isCorrect){
         this.languageCode = languageCode;
+        this.title = title;
         this.originalContent = originalContent;
         this.correctedContent = correctedContent;
         this.user = user;

@@ -4,6 +4,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 public class TextEntryResponse {
+    private String title;
     private boolean isCorrect;
     private String correctedText;
 }
