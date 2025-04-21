@@ -1,6 +1,7 @@
 package com.example.ai_spell_check.service;
 
 import com.example.ai_spell_check.model.*;
+import com.example.ai_spell_check.model.enums.FileType;
 import com.example.ai_spell_check.model.enums.ItemType;
 import com.example.ai_spell_check.model.response.DocumentUploadResponse;
 import com.example.ai_spell_check.repository.CorrectionHistoryRepository;
@@ -27,7 +28,8 @@ public class DocumentService {
     private final CorrectionHistoryRepository correctionHistoryRepository;
 
     public DocumentService(DocumentRepository documentRepository, UserRepository userRepository,
-                           OpenAIService openAIService, LanguageCodeRepository languageCodeRepository, CorrectionHistoryRepository correctionHistoryRepository) {
+                           OpenAIService openAIService, LanguageCodeRepository languageCodeRepository,
+                           CorrectionHistoryRepository correctionHistoryRepository) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.openAIService = openAIService;
@@ -36,7 +38,8 @@ public class DocumentService {
     }
 
     @Transactional
-    public DocumentUploadResponse processDocumentEntry(MultipartFile documentFile, UserDetails user, String languageCode) throws IOException {
+    public DocumentUploadResponse processDocumentEntry(MultipartFile documentFile, UserDetails user,
+                                                       String languageCode) throws IOException {
         DocumentUploadResponse response = openAIService.returnCorrectedDocument(documentFile, languageCode);
         Optional<User> userOpt = userRepository.findByUsername(user.getUsername());
         if (userOpt.isEmpty()) {
@@ -49,21 +52,30 @@ public class DocumentService {
                 documentFile.getBytes()
         );
 
-        byte[] correctedPdfBytes = UtilityClass.generatePdfFromText(response.getCorrectedContent());
+        FileType fileType = determineFileTypeFromName(documentFile.getOriginalFilename());
 
+        byte[] correctedFileBytes;
+        String correctedFileName = "corrected_" + documentFile.getOriginalFilename();
+
+        correctedFileBytes = switch (fileType) {
+            case PDF -> UtilityClass.generatePdfFromText(response.getCorrectedContent());
+            case DOCX -> UtilityClass.generateDocxFromText(response.getCorrectedContent());
+            case TXT -> UtilityClass.generateTxtFromText(response.getCorrectedContent());
+        };
 
         DocumentFile correctedFile = new DocumentFile(
-                "corrected_" + documentFile.getOriginalFilename(),
-                (long) correctedPdfBytes.length,
-                correctedPdfBytes
+                correctedFileName,
+                (long) correctedFileBytes.length,
+                correctedFileBytes
         );
 
         Language language = languageCodeRepository.findByCode(languageCode);
 
         Document document = new Document(language, originalFile, correctedFile, userOpt.get(), response.isCorrect());
+        document.setFileType(fileType);
         this.documentRepository.save(document);
 
-        CorrectionHistory correctionHistory = new CorrectionHistory(userOpt.get(),document.getId(), ItemType.DOCUMENT);
+        CorrectionHistory correctionHistory = new CorrectionHistory(userOpt.get(), document.getId(), ItemType.DOCUMENT);
         correctionHistoryRepository.save(correctionHistory);
 
         return response;
@@ -79,4 +91,27 @@ public class DocumentService {
                 .findFirst();
     }
 
+    @Transactional
+    public Optional<DocumentFile> getCorrectedFileById(Long documentId, UserDetails user) {
+        String username = user.getUsername();
+        Optional<Document> document = documentRepository.findByIdAndUser_Username(documentId, username);
+        return document.map(Document::getCorrectedFile);
+    }
+
+    private FileType determineFileTypeFromName(String fileName) {
+        if (fileName == null) {
+            return FileType.PDF;
+        }
+
+        String lowerCaseFileName = fileName.toLowerCase();
+        if (lowerCaseFileName.endsWith(".docx")) {
+            return FileType.DOCX;
+        } else if (lowerCaseFileName.endsWith(".txt")) {
+            return FileType.TXT;
+        } else if (lowerCaseFileName.endsWith(".pdf")) {
+            return FileType.PDF;
+        } else {
+            return FileType.PDF;
+        }
+    }
 }

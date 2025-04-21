@@ -33,7 +33,7 @@ public class DocumentController {
     @GetMapping("/upload")
     public String uploadPage(Model model) {
         List<Language> languageList = languageCodeService.findAll();
-        model.addAttribute("languageList",languageList);
+        model.addAttribute("languageList", languageList);
         model.addAttribute("bodyContent", "document-upload");
         return "master-template";
     }
@@ -44,7 +44,7 @@ public class DocumentController {
                                    @AuthenticationPrincipal UserDetails user,
                                    Model model) throws IOException {
         List<Language> languageList = languageCodeService.findAll();
-        model.addAttribute("languageList",languageList);
+        model.addAttribute("languageList", languageList);
 
         if (documentFile.isEmpty()) {
             model.addAttribute("error", "Please select a file to upload");
@@ -56,6 +56,16 @@ public class DocumentController {
             model.addAttribute("error", "This file exceeds our file size limit of 5 MB. Please select a file smaller than 5 MB.");
             model.addAttribute("bodyContent", "document-upload");
             return "master-template";
+        }
+
+        String originalFileName = documentFile.getOriginalFilename();
+        if (originalFileName != null) {
+            String lowerCaseFileName = originalFileName.toLowerCase();
+            if (!lowerCaseFileName.endsWith(".pdf") && !lowerCaseFileName.endsWith(".docx") && !lowerCaseFileName.endsWith(".txt")) {
+                model.addAttribute("error", "Unsupported file type. Please upload a PDF, DOCX, or TXT file.");
+                model.addAttribute("bodyContent", "document-upload");
+                return "master-template";
+            }
         }
 
         DocumentUploadResponse response = documentService.processDocumentEntry(documentFile, user, languageCode);
@@ -74,16 +84,48 @@ public class DocumentController {
 
         if (documentFileOpt.isPresent()) {
             DocumentFile documentFile = documentFileOpt.get();
-
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment; filename=\"corrected_" + fileName + "\"");
-            response.setContentLength(documentFile.getContent().length);
-
-            ServletOutputStream outputStream = response.getOutputStream();
-            outputStream.write(documentFile.getContent());
-            outputStream.flush();
+            serveFile(documentFile, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+        }
+    }
+
+    @GetMapping("/download/id/{documentId}")
+    public void downloadCorrectedFileById(@PathVariable Long documentId,
+                                          @AuthenticationPrincipal UserDetails user,
+                                          HttpServletResponse response) throws IOException {
+
+        Optional<DocumentFile> documentFileOpt = documentService.getCorrectedFileById(documentId, user);
+
+        if (documentFileOpt.isPresent()) {
+            DocumentFile documentFile = documentFileOpt.get();
+            serveFile(documentFile, response);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+        }
+    }
+
+    private void serveFile(DocumentFile documentFile, HttpServletResponse response) throws IOException {
+        String contentType = determineContentType(documentFile.getFileName());
+
+        response.setContentType(contentType);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + documentFile.getFileName() + "\"");
+        response.setContentLength(documentFile.getContent().length);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        outputStream.write(documentFile.getContent());
+        outputStream.flush();
+    }
+
+    private String determineContentType(String fileName) {
+        if (fileName.toLowerCase().endsWith(".pdf")) {
+            return "application/pdf";
+        } else if (fileName.toLowerCase().endsWith(".docx")) {
+            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        } else if (fileName.toLowerCase().endsWith(".txt")) {
+            return "text/plain";
+        } else {
+            return "application/octet-stream";
         }
     }
 }
