@@ -38,7 +38,7 @@ public class TextEntryService {
         Optional<User> userObj = userRepository.findByUsername(user.getUsername());
         Language language = languageCodeRepository.findByCode(languageCode);
 
-        TextEntry textEntry = new TextEntry(language, textInput, response.getCorrectedText(), userObj.get(), response.isCorrect());
+        TextEntry textEntry = new TextEntry(language, response.getTitle(), textInput, response.getCorrectedText(), userObj.get(), response.isCorrect());
         textEntryRepository.save(textEntry);
 
         CorrectionHistory correctionHistory = new CorrectionHistory(userObj.get(),textEntry.getId(), ItemType.TEXT_ENTRY);

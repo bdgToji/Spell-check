@@ -28,14 +28,17 @@ public class OpenAIService {
     public TextEntryResponse returnCorrectedText(String originalText, String languageCode) throws JsonProcessingException {
         String promptText = String.format(
                 "I will send you a text and I want you to check if it contains any spelling or grammar errors.\n" +
+                        "I also want you to define a title that will be of 2 or 3 words depending on the text content.\n" +
                         "The language of the text is: \"%s\".\n" +
                         "Return a JSON in this format:\n" +
                         "{\n" +
+                        "  \"title\": [your defined title],\n" +
                         "  \"correct\": true,\n" +
                         "  \"correctedText\": \"same as original text\"\n" +
                         "}\n\n" +
                         "If there are errors that need correction, return:\n" +
                         "{\n" +
+                        "  \"title\": [your defined title],\n" +
                         "  \"correct\": false,\n" +
                         "  \"correctedText\": \"corrected version of the text\"\n" +
                         "}\n\n" +
