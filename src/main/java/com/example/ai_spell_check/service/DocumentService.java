@@ -9,6 +9,8 @@ import com.example.ai_spell_check.repository.DocumentRepository;
 import com.example.ai_spell_check.repository.LanguageCodeRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.example.ai_spell_check.utils.UtilityClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,5 +115,9 @@ public class DocumentService {
         } else {
             return FileType.PDF;
         }
+    }
+
+    public Page<Document> getDocumentsByUser(User user, Pageable pageable) {
+        return documentRepository.findByUser(user, pageable);
     }
 }
