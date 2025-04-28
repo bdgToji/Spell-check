@@ -14,9 +14,13 @@ import com.example.ai_spell_check.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import static com.example.ai_spell_check.service.specification.FieldFilterSpecification.*;
 
 @Service
 public class TextEntryService {
@@ -50,6 +54,15 @@ public class TextEntryService {
     }
 
     public Page<TextEntry> getTextEntriesByUser(User user, Pageable pageable) {
-        return textEntryRepository.findByUser(user, pageable);
+        return textEntryRepository.findByUser(user, pageable); 
+    }
+    public Page<TextEntry> findPage(String userId, Integer pageNum, Integer pageSize) {
+        Specification<TextEntry> specification = Specification
+                .where(filterEquals(TextEntry.class, "user.id", userId));
+
+        return this.textEntryRepository.findAll(
+                specification,
+                PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "creationDate"))
+        );
     }
 }
