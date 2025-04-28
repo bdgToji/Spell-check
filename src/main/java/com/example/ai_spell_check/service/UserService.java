@@ -1,6 +1,7 @@
 package com.example.ai_spell_check.service;
 
 
+import com.example.ai_spell_check.model.TextEntry;
 import com.example.ai_spell_check.model.User;
 import com.example.ai_spell_check.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,9 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -54,5 +57,36 @@ public class UserService {
         User userObj = findByUsername(user.getUsername());
         userObj.setPassword(passwordEncoder.encode(password));
         userRepository.save(userObj);
+    }
+
+    public List<User> listAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public int countTextEntries(String username){
+        return userRepository.countTextEntries(username);
+    }
+
+    public int countDocuments(String username){
+        return userRepository.countDocuments(username);
+    }
+
+    public User findUserById(String id){
+        return userRepository.findById(id).orElseThrow();
+    }
+
+    @Transactional
+    public void updateUser(String id, String username, String email, String password){
+        User user = userRepository.findById(id).orElseThrow();
+        List<User> users = userRepository.findAll();
+
+        boolean usernameChanged = !user.getUsername().equals(username);
+        if(usernameChanged){
+            user.setUsername(username);
+        }
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+
+        userRepository.save(user);
     }
 }

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <form th:action="@{'/admin/users/edit'}" method="post">
+        <input type="hidden" name="id" th:value="(${id} !=null ? ${userDetails.user.getId()} : '')">
+        <label for="username">Name</label>
+        <input id="username" name="username" type="text" th:value="(${id} !=null ? ${userDetails.user.getUsername()} : '')">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="text" th:value="(${id} !=null ? ${userDetails.user.getEmail()} : '')">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="text" th:value="(${id} !=null ? ${userDetails.user.getPassword()} : '')">
+        <button type="submit">Update</button>
+    </form>
+    <div th:text="${userDetails.user.getRegistrationDate()}"></div>
+</div>
+
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Document Name</th>
+            <th>Upload Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="doc : ${userDetails.documentsPage.content}">
+            <td th:text="${doc.originalFile?.fileName} ?: 'Unnamed document'">Document Name</td>
+            <td th:text="${#temporals.format(doc.uploadDate, 'dd MMM yyyy')}">Date</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+    <span th:each="i : ${#numbers.sequence(0, userDetails.documentsPage.totalPages - 1)}">
+        <a th:href="@{/admin/users/{id}(id=${userDetails.user.id}, docPage=${i}, textPage=${userDetails.textEntriesPage.number})}"
+           th:class="${i == userDetails.documentsPage.number} ? 'active'">
+           [[${i + 1}]]
+        </a>
+    </span>
+    </div>
+</div>
+
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="text : ${userDetails.textEntriesPage.content}">
+            <td th:text="${text.title}">Title</td>
+            <td th:text="${#temporals.format(text.creationDate, 'dd MMM yyyy')}">Date</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+    <span th:each="i : ${#numbers.sequence(0, userDetails.textEntriesPage.totalPages - 1)}">
+        <a th:href="@{/admin/users/{id}(id=${userDetails.user.id}, docPage=${userDetails.documentsPage.number}, textPage=${i})}"
+           th:class="${i == userDetails.textEntriesPage.number} ? 'active'">
+           [[${i + 1}]]
+        </a>
+    </span>
+    </div>
+</div>
+
+</body>
+</html>

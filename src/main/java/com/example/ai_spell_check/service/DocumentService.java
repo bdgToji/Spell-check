@@ -10,6 +10,7 @@ import com.example.ai_spell_check.repository.LanguageCodeRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.example.ai_spell_check.utils.UtilityClass;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -122,6 +123,9 @@ public class DocumentService {
         }
     }
 
+    public Page<Document> getDocumentsByUser(User user, Pageable pageable) {
+        return documentRepository.findByUser(user, pageable);
+
     public Page<Document> findPage(String userId, Integer pageNum, Integer pageSize) {
         Specification<Document> specification = Specification
                 .where(filterEquals(Document.class, "user.id", userId
@@ -145,6 +149,7 @@ public class DocumentService {
 
         return Optional.empty();
     }
+      
     @Transactional(readOnly = true)
     public List<Document> findDocumentMetadataByUser(Long userId) {
         return documentRepository.findDocumentMetadataByUserId(userId);

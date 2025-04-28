@@ -13,6 +13,7 @@ import com.example.ai_spell_check.repository.TextEntryRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -52,6 +53,9 @@ public class TextEntryService {
         return response;
     }
 
+    public Page<TextEntry> getTextEntriesByUser(User user, Pageable pageable) {
+        return textEntryRepository.findByUser(user, pageable); 
+    }
     public Page<TextEntry> findPage(String userId, Integer pageNum, Integer pageSize) {
         Specification<TextEntry> specification = Specification
                 .where(filterEquals(TextEntry.class, "user.id", userId));
