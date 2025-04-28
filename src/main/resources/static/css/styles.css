@@ -1,0 +1,203 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 80px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 2rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.hero-section {
+    padding: 5rem 0;
+}
+
+.signup-btn {
+    background-color: #ff5a79;
+    border-color: #ff5a79;
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.login-btn {
+    background-color: #6aefcf;
+    border-color: #6aefcf;
+    color: #333;
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.signup-free-btn {
+    background-color: #ff5a79;
+    border-color: #ff5a79;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+}
+
+.highlight {
+    color: #0d6a55;
+    font-weight: bold;
+}
+
+.page-divider {
+    height: 4px;
+    background: linear-gradient(90deg, white, #6aefcf, white);
+    margin: 0;
+}
+
+.illustration {
+    max-width: 100%;
+    height: auto;
+}
+
+.social-icons a {
+    font-size: 1.8rem;
+    margin-left: 15px;
+    color: inherit;
+}
+
+.social-icons .fa-linkedin {
+    color: #0077b5;
+}
+
+.social-icons .fa-facebook {
+    color: #1877f2;
+}
+
+.social-icons .fa-instagram {
+    color: #e1306c;
+}
+
+.stats {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.offcanvas-end {
+    max-width: 250px;
+}
+
+.navbar-nav {
+    text-align: left;
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 991px) {
+    .navbar .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-right: 0 !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-nav {
+        flex-direction: row;
+        margin-left: auto;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 8px;
+        margin-bottom: 0;
+    }
+
+    .navbar-nav .btn {
+        display: inline-block;
+        width: auto;
+        min-width: fit-content;
+        white-space: nowrap;
+    }
+
+    .navbar-brand {
+        margin-right: auto;
+    }
+
+    .navbar > .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .offcanvas-body {
+        justify-content: flex-end;
+    }
+}
+
+.custom-accordion .accordion-item {
+    border: 2px solid #6aefcf;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.custom-accordion .accordion-button {
+    background-color: white;
+    color: #333;
+    font-weight: bold;
+}
+
+.custom-accordion .accordion-button:not(.collapsed) {
+    background-color: white;
+    color: #333;
+    box-shadow: none;
+}
+
+.pagination {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination li a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: #ff5a79;
+    border: 2px solid #ff5a79;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #ff5a79;
+    color: #fff;
+}
+
+.pagination li.disabled a {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.results-info select {
+    border-radius: 8px;
+}

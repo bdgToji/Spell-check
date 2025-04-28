@@ -1,0 +1,132 @@
+<th:block>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <h4 class="text-center mb-5">History</h4>
+
+        <div class="row">
+          <!-- Text Entries Section -->
+          <div class="col-md-6 mb-4">
+              <div class="d-flex align-items-center justify-content-between mb-3 p-3">
+                <h4>Text Entries</h4>
+                <a href="/history/text-entries" class="btn signup-btn btn-primary">
+                  See All
+                </a>
+              </div>
+
+              <div class="accordion custom-accordion" id="text-entries-accordion">
+                <div th:if="${#lists.isEmpty(textEntries)}" class="text-center p-3">
+                  <p class="text-muted">Empty</p>
+                </div>
+
+                <div class="accordion-item" th:each="textEntry : ${textEntries}" th:if="${textEntry != null}">
+                  <h2 class="accordion-header">
+                    <button th:text="${textEntry.getTitle()}" class="accordion-button collapsed border-0 shadow-none"
+                            type="button" data-bs-toggle="collapse" th:data-bs-target="${'#entry-' + textEntry.getId()}"
+                            aria-expanded="false" th:aria-controls="${'entry-' + textEntry.getId()}"
+                            style="background-color: white; outline: none;">
+                    </button>
+                  </h2>
+                  <div th:id="${'entry-' + textEntry.getId()}" class="accordion-collapse collapse" data-bs-parent="#text-entries-accordion">
+                    <div class="accordion-body">
+                      <!-- Original content -->
+                      <div class="mb-3">
+                        <strong>Original:</strong>
+                        <p th:text="${textEntry.getOriginalContent()}"></p>
+                      </div>
+
+                      <!-- Corrected content -->
+                      <div class="mb-3">
+                        <strong>Corrected:</strong>
+                        <p th:text="${textEntry.getCorrectedContent()}"></p>
+                      </div>
+
+                      <div class="mt-3 pt-2 border-top" th:if="${textEntry.getCreationDate() != null}">
+                        <small class="text-muted">
+                          <i class="bi bi-calendar3"></i>
+                          <span th:text="${#temporals.format(textEntry.getCreationDate(), 'dd MMM yyyy, HH:mm')}"></span>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- Documents Section -->
+          <div class="col-md-6 mb-4 ml-4">
+              <div class="d-flex align-items-center justify-content-between mb-3 p-3">
+                <h4>Documents</h4>
+                <a href="/history/documents" class="btn signup-btn btn-primary">
+                  See All
+                </a>
+              </div>
+
+              <div class="accordion custom-accordion" id="documents-accordion">
+                <div th:if="${#lists.isEmpty(documents)}" class="text-center p-3">
+                  <p class="text-muted">Empty</p>
+                </div>
+
+                <div class="accordion-item" th:each="document : ${documents}" th:if="${document != null}">
+                  <h2 class="accordion-header">
+                    <button th:text="${document.getOriginalFile() != null ? document.getOriginalFile().getFileName() : 'Untitled Document'}"
+                            class="accordion-button collapsed border-0 shadow-none" type="button"
+                            data-bs-toggle="collapse" th:data-bs-target="${'#doc-' + document.getId()}"
+                            aria-expanded="false" th:aria-controls="${'doc-' + document.getId()}"
+                            style="background-color: white; outline: none;">
+                    </button>
+                  </h2>
+                  <div th:id="${'doc-' + document.getId()}" class="accordion-collapse collapse" data-bs-parent="#documents-accordion">
+                    <div class="accordion-body">
+                      <!-- Original file section -->
+                      <div class="mb-3" th:if="${document.getOriginalFile() != null}">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <strong>Original:</strong>
+                          <a th:href="@{/document/download/original/{id}(id=${document.getId()})}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Download
+                          </a>
+                        </div>
+                        <p class="text-muted mb-0" th:text="${document.getOriginalFile().getFileName()}"></p>
+                      </div>
+                      <div class="mb-3" th:if="${document.getOriginalFile() == null}">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <strong>Original:</strong>
+                          <span class="badge bg-secondary">Not available</span>
+                        </div>
+                      </div>
+
+                      <!-- Corrected file section -->
+                      <div class="mb-2" th:if="${document.getCorrectedFile() != null}">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <strong>Corrected:</strong>
+                          <a th:href="@{/document/download/id/{id}(id=${document.getId()})}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-file-earmark-check"></i> Download
+                          </a>
+                        </div>
+                        <p class="text-muted mb-0" th:text="${document.getCorrectedFile().getFileName()}"></p>
+                      </div>
+                      <div class="mb-2" th:if="${document.getCorrectedFile() == null}">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <strong>Corrected:</strong>
+                          <span class="badge bg-secondary">Not available</span>
+                        </div>
+                      </div>
+
+                      <div class="mt-3 pt-2 border-top" th:if="${document.getUploadDate() != null}">
+                        <small class="text-muted">
+                          <i class="bi bi-calendar3"></i>
+                          <span th:text="${#temporals.format(document.getUploadDate(), 'dd MMM yyyy, HH:mm')}"></span>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</th:block>

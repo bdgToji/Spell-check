@@ -1,0 +1,66 @@
+<th:block>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h4>Unlimited &amp; Fast Processing</h4>
+                <p>
+                    You can upload an unlimited number of documents (PDF, WORD and TXT FILES) with lightning-fast
+                    processing. Our AI analyzes and corrects your text in seconds,
+                    ensuring accurate and efficient results every time.
+                </p>
+
+                <div th:if="${error != null}" class="alert alert-danger mb-3" role="alert">
+                    <span th:text="${error}"></span>
+                </div>
+
+                <form action="/document/upload" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
+                    <div class="w-100 w-md-75 mb-3 text-start">
+                        <label for="languageCode" class="form-label">Select language:</label>
+                        <select class="form-select mb-3" name="languageCode" id="languageCode">
+                            <option th:each="language : ${languageList}"
+                                    th:value="${language.code}"
+                                    th:text="${language.name}"
+                                    th:selected="${language.code == 'en' || (selectedLanguage != null && selectedLanguage == language.code)}">
+                                English
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="w-100 w-md-75 mb-3 text-start">
+                        <label for="documentFile" class="form-label">Upload your document here:</label>
+                        <input id="documentFile" name="documentFile" type="file" accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                    </div>
+
+                    <button class="btn signup-btn text-white px-5" type="submit">
+                        Check
+                    </button>
+                </form>
+
+                <div th:if="${response != null and response.isCorrect}" class="alert alert-success mt-4" role="alert">
+                    <h5>Document Analysis Complete</h5>
+                    <p>Your document has no spelling or grammar errors!</p>
+                </div>
+
+                <div th:if="${response != null and !response.isCorrect}"
+                     class="mt-4 p-4 rounded"
+                     style="background-color: #6aefcf;">
+
+                    <div class="mb-3">
+                        <h5>Document Analysis Complete</h5>
+                        <p>We found and corrected some spelling or grammar errors in your document.</p>
+                    </div>
+
+                    <div class="card border-0 shadow-none" style="background-color: transparent;">
+                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                            <span><strong>Corrected File</strong></span>
+                            <a th:href="@{'/document/download/' + ${response.fileName}}"
+                               class="btn btn signup-btn" th:text="'corrected_' + ${response.fileName}"></a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</th:block>
