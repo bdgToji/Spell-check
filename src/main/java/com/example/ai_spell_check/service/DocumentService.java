@@ -125,6 +125,7 @@ public class DocumentService {
 
     public Page<Document> getDocumentsByUser(User user, Pageable pageable) {
         return documentRepository.findByUser(user, pageable);
+    }
 
     public Page<Document> findPage(String userId, Integer pageNum, Integer pageSize) {
         Specification<Document> specification = Specification
