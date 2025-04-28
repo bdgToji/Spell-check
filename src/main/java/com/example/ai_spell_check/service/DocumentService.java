@@ -9,7 +9,12 @@ import com.example.ai_spell_check.repository.DocumentRepository;
 import com.example.ai_spell_check.repository.LanguageCodeRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.example.ai_spell_check.utils.UtilityClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +22,8 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import static com.example.ai_spell_check.service.specification.FieldFilterSpecification.*;
+
 
 @Service
 public class DocumentService {
@@ -113,5 +120,33 @@ public class DocumentService {
         } else {
             return FileType.PDF;
         }
+    }
+
+    public Page<Document> findPage(String userId, Integer pageNum, Integer pageSize) {
+        Specification<Document> specification = Specification
+                .where(filterEquals(Document.class, "user.id", userId
+                ));
+        return this.documentRepository.findAll(
+                specification,
+                PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "uploadDate"))
+        );
+    }
+
+    public Optional<DocumentFile> getOriginalFileById(Long documentId, UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Document document = documentRepository.findById(documentId)
+                .orElse(null);
+
+        if (document != null && document.getUser().getId().equals(user.getId())) {
+            return Optional.ofNullable(document.getOriginalFile());
+        }
+
+        return Optional.empty();
+    }
+    @Transactional(readOnly = true)
+    public List<Document> findDocumentMetadataByUser(Long userId) {
+        return documentRepository.findDocumentMetadataByUserId(userId);
     }
 }

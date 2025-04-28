@@ -128,4 +128,18 @@ public class DocumentController {
             return "application/octet-stream";
         }
     }
+    @GetMapping("/download/original/{documentId}")
+    public void downloadOriginalFile(@PathVariable Long documentId,
+                                     @AuthenticationPrincipal UserDetails user,
+                                     HttpServletResponse response) throws IOException {
+
+        Optional<DocumentFile> documentFileOpt = documentService.getOriginalFileById(documentId, user);
+
+        if (documentFileOpt.isPresent()) {
+            DocumentFile documentFile = documentFileOpt.get();
+            serveFile(documentFile, response);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+        }
+    }
 }

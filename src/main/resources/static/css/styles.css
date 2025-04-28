@@ -137,3 +137,67 @@ body {
         justify-content: flex-end;
     }
 }
+
+.custom-accordion .accordion-item {
+    border: 2px solid #6aefcf;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.custom-accordion .accordion-button {
+    background-color: white;
+    color: #333;
+    font-weight: bold;
+}
+
+.custom-accordion .accordion-button:not(.collapsed) {
+    background-color: white;
+    color: #333;
+    box-shadow: none;
+}
+
+.pagination {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination li a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: #ff5a79;
+    border: 2px solid #ff5a79;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #ff5a79;
+    color: #fff;
+}
+
+.pagination li.disabled a {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.results-info select {
+    border-radius: 8px;
+}
