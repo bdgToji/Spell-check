@@ -89,4 +89,9 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public void deleteUserById(String id){
+        User user = userRepository.findById(id).orElseThrow();
+        userRepository.delete(user);
+    }
 }

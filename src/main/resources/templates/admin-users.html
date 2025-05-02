@@ -1,33 +1,66 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-<table>
-    <thead>
-    <tr>
-        <th>USERNAME</th>
-        <th>E-MAIL</th>
-        <th>TOTAL TEXT ENTRIES</th>
-        <th>TOTAL DOCUMENTS</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user: ${users}">
-        <td th:text="${user.user.username}">username</td>
-        <td th:text="${user.user.email}">e-mail</td>
-        <td th:text="${user.textEntries}">0</td>
-        <td th:text="${user.documents}">0</td>
-        <th>
-            <a th:href="@{'/admin/users/{id}' (id=${user.user.getId()})}">Update</a>
-        </th>
-    </tr>
-    </tbody>
-</table>
-
-</body>
-</html>
+<style>
+    table {
+        margin: 0 auto;
+        margin-top: 30px;
+        overflow: hidden;
+        border-radius: 16px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    tr:nth-child(even){background-color: #f2f2f2;}
+    th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color:#6aefcf;
+        color: white;
+    }
+    td, th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    thead tr:first-child th:first-child {
+        border-top-left-radius: 16px;
+    }
+    thead tr:first-child th:last-child {
+        border-top-right-radius: 16px;
+    }
+    tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 16px;
+    }
+    tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 16px;
+    }
+</style>
+<th:block>
+    <table>
+        <thead>
+        <tr>
+            <th>USERNAME</th>
+            <th>E-MAIL</th>
+            <th>TOTAL TEXT ENTRIES</th>
+            <th>TOTAL DOCUMENTS</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user: ${users}">
+            <td th:text="${user.user.username}">username</td>
+            <td th:text="${user.user.email}">e-mail</td>
+            <td th:text="${user.textEntries}">0</td>
+            <td th:text="${user.documents}">0</td>
+            <td>
+                <a th:href="@{'/admin/users/{id}' (id=${user.user.getId()})}">
+                    <button type="submit">Update</button>
+                </a>
+            </td>
+            <td>
+                <form th:action="@{'/admin/users/delete/{id}' (id=${user.user.getId()})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
