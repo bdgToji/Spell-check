@@ -44,8 +44,9 @@ public class AdminController {
             usersWithCounts.add(new UserWithCounts(user, textCount, docCount));
         }
         model.addAttribute("users", usersWithCounts);
+        model.addAttribute("bodyContent", "admin-users");
 
-        return "admin-users";
+        return "master-template";
     }
 
     @GetMapping("/users/{id}")
@@ -60,17 +61,27 @@ public class AdminController {
         Page<TextEntry> textEntries = textEntryService.getTextEntriesByUser(user, PageRequest.of(textPage, 3));
 
         model.addAttribute("userDetails", new UserDetailsDTO(user, documents, textEntries));
+        model.addAttribute("bodyContent", "admin-user-edit");
 
-        return "admin-user-edit";
+        return "master-template";
     }
 
     @PostMapping("/users/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String updateUser(@RequestParam(required = false) String id,
                              @RequestParam String username,
                              @RequestParam String email,
                              @RequestParam String password){
         userService.updateUser(id, username, email, password);
 
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteUser(@PathVariable String id,
+                             Model model){
+        userService.deleteUserById(id);
         return "redirect:/admin/users";
     }
 }
