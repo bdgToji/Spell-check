@@ -40,8 +40,7 @@
             <th>E-MAIL</th>
             <th>TOTAL TEXT ENTRIES</th>
             <th>TOTAL DOCUMENTS</th>
-            <th></th>
-            <th></th>
+            <th colspan="3">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -52,6 +51,11 @@
             <td th:text="${user.documents}">0</td>
             <td>
                 <a th:href="@{'/admin/users/{id}' (id=${user.user.getId()})}">
+                    <button type="submit">Details</button>
+                </a>
+            </td>
+            <td>
+                <a th:href="@{'/admin/users/update/{id}' (id=${user.user.getId()})}">
                     <button type="submit">Update</button>
                 </a>
             </td>

@@ -1,9 +1,13 @@
 package com.example.ai_spell_check.service;
 
 
-import com.example.ai_spell_check.model.TextEntry;
+import com.example.ai_spell_check.model.DTO.CorrectionHistoryDto;
+import com.example.ai_spell_check.model.DTO.UserDetailsDto;
+import com.example.ai_spell_check.model.DTO.UserWithCountsDto;
 import com.example.ai_spell_check.model.User;
 import com.example.ai_spell_check.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,17 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CorrectionHistoryService correctionHistoryService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CorrectionHistoryService correctionHistoryService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.correctionHistoryService = correctionHistoryService;
     }
     public void createUser(String username, String email, String password){
         User user = new User(username,email, passwordEncoder.encode(password));
@@ -63,12 +68,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public int countTextEntries(String username){
-        return userRepository.countTextEntries(username);
-    }
-
-    public int countDocuments(String username){
-        return userRepository.countDocuments(username);
+    public List<UserWithCountsDto> listAllUsersWithCounts() {
+        return userRepository.findAllUsersWithCounts();
     }
 
     public User findUserById(String id){
@@ -78,9 +79,8 @@ public class UserService {
     @Transactional
     public void updateUser(String id, String username, String email, String password){
         User user = userRepository.findById(id).orElseThrow();
-        List<User> users = userRepository.findAll();
-
         boolean usernameChanged = !user.getUsername().equals(username);
+
         if(usernameChanged){
             user.setUsername(username);
         }
@@ -93,5 +93,12 @@ public class UserService {
     public void deleteUserById(String id){
         User user = userRepository.findById(id).orElseThrow();
         userRepository.delete(user);
+    }
+
+    public UserDetailsDto findUserByIdWithTextEntriesAndDocuments(String id, Pageable pageable) {
+        User userObj = userRepository.findById(id).orElseThrow();
+        Page<CorrectionHistoryDto> correctionHistoryPage = correctionHistoryService.getCombinedCorrectionHistory(id, pageable);
+
+        return new UserDetailsDto(userObj, correctionHistoryPage);
     }
 }
