@@ -8,12 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UserWithCounts {
+public class UserWithCountsDto {
     private User user;
-    private int textEntries;
-    private int documents;
-
-    public String getId(){
-        return user.getId();
-    }
+    private long textEntries;
+    private long documents;
 }

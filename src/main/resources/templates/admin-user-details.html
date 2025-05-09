@@ -1,0 +1,64 @@
+<th:block>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <h5 class="mb-3">User Information</h5>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Username:</strong> <span th:text="${userDetails.getUser().getUsername()}"></span></p>
+                                <p><strong>Email:</strong> <span th:text="${userDetails.getUser().getEmail()}"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Role:</strong> <span th:text="${userDetails.getUser().getRole()}"></span></p>
+                                <p><strong>Member Since:</strong> <span th:text="${#temporals.format(userDetails.getUser().getRegistrationDate(), 'dd-MM-yyyy')}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="mb-3">Correction History</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Language</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${userDetails.getCorrectionHistoryPage().isEmpty()}">
+                            <td colspan="6" class="text-center">No correction history found</td>
+                        </tr>
+                        <tr th:each="item : ${userDetails.getCorrectionHistoryPage().getContent()}">
+                            <td>
+                                <span th:text="${item.getTitle()}"></span>
+                                <span th:if="${item.getPreviewContent() != null}" class="d-block text-muted small" th:text="${item.getPreviewContent()}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${item.getItemType().name() == 'DOCUMENT'}" class="badge bg-info text-white">
+                                    Document
+                                    <span th:if="${item.getFileType() != null}" th:text="${'(' + item.getFileType().name() + ')'}"></span>
+                                </span>
+                                <span th:if="${item.getItemType().name() == 'TEXT_ENTRY'}" class="badge bg-primary text-white">Text Entry</span>
+                            </td>
+                            <td th:text="${#temporals.format(item.getDate(), 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${item.getLanguageName()}"></td>
+                            <td>
+                                <span th:if="${item.isCorrect()}" class="badge bg-success">Corrected</span>
+                                <span th:unless="${item.isCorrect()}" class="badge bg-warning text-dark">Original</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-wrapper mt-4" th:include="fragments/paging :: pageSection(${page})"></div>
+            </div>
+        </div>
+    </div>
+</th:block>
