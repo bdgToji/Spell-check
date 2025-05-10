@@ -25,19 +25,45 @@
 </style>
 
 <th:block>
-    <div class="center-container">
-        <div>
-            <form th:action="@{'/admin/users/edit'}" method="post">
-                <input type="hidden" name="id" th:value="(${id} !=null ? ${user.getId()} : '')">
-                <label for="username">Name</label>
-                <input id="username" name="username" type="text" th:value="(${id} !=null ? ${user.getUsername()} : '')">
-                <label for="email">E-mail</label>
-                <input id="email" name="email" type="text" th:value="(${id} !=null ? ${user.getEmail()} : '')">
-                <label for="password">Password</label>
-                <input id="password" name="password" type="text" th:value="(${id} !=null ? ${user.getPassword()} : '')">
-                <button type="submit">Update</button>
-            </form>
-        </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5 mb-4">
+                <div class="card shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">Edit User</h5>
 
+                        <form th:action="@{'/admin/users/edit'}" method="post">
+                            <input type="hidden" name="id" th:value="(${id} != null ? ${user.getId()} : '')">
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Name</label>
+                                <input id="username" name="username" type="text" class="form-control"
+                                       th:value="(${id} != null ? ${user.getUsername()} : '')" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">E-mail</label>
+                                <input id="email" name="email" type="email" class="form-control"
+                                       th:value="(${id} != null ? ${user.getEmail()} : '')" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input id="password" name="password" type="password" class="form-control"
+                                       th:value="(${id} != null ? ${user.getPassword()} : '')" required>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button type="submit" class="btn signup-btn">Update</button>
+                            </div>
+                        </form>
+
+                        <div class="error mt-3 text-center">
+                            <p th:if="${param.error}" class="text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </th:block>
