@@ -36,16 +36,8 @@ public class HistoryController {
     public String getHistoryPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User currentUser = this.userService.findByUsername(userDetails.getUsername());
 
-        List<Document> allDocuments = currentUser.getDocuments();
-        List<Document> validDocuments = allDocuments.stream()
-                .filter(d -> d != null && d.getId() != null).toList();
-
-        List<TextEntry> textEntries = currentUser.getTextEntries();
-
-        List<Document> documents10 = validDocuments.stream()
-                .limit(10).toList();
-        List<TextEntry> textEntries10 = textEntries.stream()
-                .limit(10).toList();
+        List<Document> documents10 = documentService.find10RecentDocumentsByUser(currentUser);
+        List<TextEntry> textEntries10 = textEntryService.find10RecentTextEntriesByUser(currentUser);
 
         model.addAttribute("textEntries", textEntries10);
         model.addAttribute("documents", documents10);

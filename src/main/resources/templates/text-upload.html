@@ -9,7 +9,7 @@
                     ensuring accurate and efficient results every time.
                 </p>
 
-                <form action="/text/upload" method="post" class="d-flex flex-column align-items-center">
+                <form id="uploadForm" action="/text/upload" method="post" class="d-flex flex-column align-items-center">
                     <div class="w-100 w-md-75 mb-3 text-start">
                         <label for="languageCode" class="form-label">Select language:</label>
                         <select class="form-select mb-3" name="languageCode" id="languageCode">
@@ -31,66 +31,102 @@
                                 placeholder="Type or paste your text..."
                         ></textarea>
                     </div>
-                    <button class="btn signup-btn text-white px-5" type="submit">
+                    <button id="submitButton" class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>
                 </form>
 
-                <div th:if="${response != null and !response.isCorrect}"
-                     class="mt-4 p-4 rounded"
-                     style="background-color: #6aefcf;">
-
-                    <div class="mb-3">
-                        <h5>Text Analysis Complete</h5>
-                        <p>We found and corrected some spelling or grammar errors in your text.</p>
+                <div id="loadingSpinner" style="display: none;" class="text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Processing text...</span>
                     </div>
-
-                    <div class="card border-0 shadow-none mb-3" style="background-color: #ff5a79;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${originalText}"></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${response.correctedText}"></pre>
-                            </div>
-                        </div>
-                    </div>
-
+                    <p class="mt-2">Processing your text. Please wait...</p>
                 </div>
 
-                <div th:if="${response != null and response.isCorrect}"
-                     class="mt-4 p-4 rounded"
-                     style="background-color: #6aefcf;">
+                <div id="resultContainer">
+                    <div th:if="${response != null and !response.isCorrect}"
+                         class="mt-4 p-4 rounded position-relative"
+                         style="background-color: #6aefcf;">
+                        <button class="clear-results-btn btn btn-outline-secondary btn-sm position-absolute"
+                                style="top: 10px; left: 10px; z-index: 10;">
+                            <i class="fas fa-times"></i> Clear Results
+                        </button>
+                        <div class="mb-3">
+                            <h5>Text Analysis Complete</h5>
+                            <p>We found and corrected some spelling or grammar errors in your text.</p>
+                        </div>
 
-                    <div class="mb-3">
-                        <h5>Text Analysis Complete</h5>
-                        <p>We didn't found spelling or grammar errors in your text.</p>
-                    </div>
-
-                    <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${response.correctedText}"></pre>
+                        <div class="card border-0 shadow-none mb-3" style="background-color: #ff5a79;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${originalText}"></pre>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${response.correctedText}"></pre>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                </div>
+                    <div th:if="${response != null and response.isCorrect}"
+                         class="mt-4 p-4 rounded position-relative"
+                         style="background-color: #6aefcf;">
+                        <button class="clear-results-btn btn btn-outline-secondary btn-sm position-absolute"
+                                style="top: 10px; left: 10px; z-index: 10;">
+                            <i class="fas fa-times"></i> Clear Results
+                        </button>
+                        <div class="mb-3">
+                            <h5>Text Analysis Complete</h5>
+                            <p>We didn't find spelling or grammar errors in your text.</p>
+                        </div>
 
+                        <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${response.correctedText}"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uploadForm');
+            const spinner = document.getElementById('loadingSpinner');
+            const submitButton = document.getElementById('submitButton');
+            const resultContainer = document.getElementById('resultContainer');
+
+            form.addEventListener('submit', function() {
+                resultContainer.style.display = 'none';
+                spinner.style.display = 'block';
+                submitButton.disabled = true;
+                submitButton.innerHTML = 'Processing text...';
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target && (e.target.classList.contains('clear-results-btn') || e.target.closest('.clear-results-btn'))) {
+                const resultContainer = document.getElementById('resultContainer');
+                while (resultContainer.firstChild) {
+                    resultContainer.removeChild(resultContainer.firstChild);
+                }
+                resultContainer.style.display = 'none';
+
+                const textInput = document.getElementById('textInput');
+                if (textInput) {
+                    textInput.value = '';
+                }
+            }
+        });
+    </script>
 </th:block>
-
-
-
-
-
-
-
-

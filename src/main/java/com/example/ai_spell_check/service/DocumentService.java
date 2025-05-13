@@ -9,6 +9,7 @@ import com.example.ai_spell_check.repository.DocumentRepository;
 import com.example.ai_spell_check.repository.LanguageCodeRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.example.ai_spell_check.utils.UtilityClass;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -128,9 +129,15 @@ public class DocumentService {
     }
 
     public Page<Document> findPage(String userId, Integer pageNum, Integer pageSize) {
-        Specification<Document> specification = Specification
-                .where(filterEquals(Document.class, "user.id", userId
-                ));
+        Specification<Document> specification = (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("language", JoinType.LEFT);
+                root.fetch("originalFile", JoinType.LEFT);
+                root.fetch("correctedFile", JoinType.LEFT);
+                query.distinct(true);
+            }
+            return cb.equal(root.get("user").get("id"), userId);
+        };
         return this.documentRepository.findAll(
                 specification,
                 PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "uploadDate"))
@@ -155,4 +162,10 @@ public class DocumentService {
     public List<Document> findDocumentMetadataByUser(Long userId) {
         return documentRepository.findDocumentMetadataByUserId(userId);
     }
+
+    public List<Document> find10RecentDocumentsByUser(User currentUser) {
+        return documentRepository.findRecentByUser(currentUser,PageRequest.of(0, 10));
+    }
+
+
 }
