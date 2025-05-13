@@ -19,12 +19,16 @@ public interface DocumentRepository extends JpaSpecificationRepository<Document,
     @EntityGraph(attributePaths = {"originalFile", "correctedFile", "language"})
     Page<Document> findByUser(User user, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"originalFile", "correctedFile", "language"})
-    List<Document> findByUser(User user);
-
     @Query("SELECT d FROM Document d JOIN FETCH d.originalFile of JOIN FETCH d.correctedFile cf " +
             "WHERE d.user.id = :userId " +
             "ORDER BY d.uploadDate DESC")
     List<Document> findDocumentMetadataByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT d FROM Document d " +
+            "LEFT JOIN FETCH d.originalFile " +
+            "LEFT JOIN FETCH d.correctedFile " +
+            "LEFT JOIN FETCH d.language " +
+            "WHERE d.user = :user AND d.id IS NOT NULL " +
+            "ORDER BY d.uploadDate DESC")
+    List<Document> findRecentByUser(@Param("user") User user, Pageable pageable);
 }
