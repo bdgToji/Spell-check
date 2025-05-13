@@ -9,7 +9,7 @@
                     ensuring accurate and efficient results every time.
                 </p>
 
-                <form action="/text/upload" method="post" class="d-flex flex-column align-items-center">
+                <form id="uploadForm" action="/text/upload" method="post" class="d-flex flex-column align-items-center">
                     <div class="w-100 w-md-75 mb-3 text-start">
                         <label for="languageCode" class="form-label">Select language:</label>
                         <select class="form-select mb-3" name="languageCode" id="languageCode">
@@ -31,7 +31,7 @@
                                 placeholder="Type or paste your text..."
                         ></textarea>
                     </div>
-                    <button class="btn signup-btn text-white px-5" type="submit">
+                    <button id="submitButton" class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>
                 </form>
@@ -45,9 +45,12 @@
 
                 <div id="resultContainer">
                     <div th:if="${response != null and !response.isCorrect}"
-                         class="mt-4 p-4 rounded"
+                         class="mt-4 p-4 rounded position-relative"
                          style="background-color: #6aefcf;">
-
+                        <button class="clear-results-btn btn btn-outline-secondary btn-sm position-absolute"
+                                style="top: 10px; left: 10px; z-index: 10;">
+                            <i class="fas fa-times"></i> Clear Results
+                        </button>
                         <div class="mb-3">
                             <h5>Text Analysis Complete</h5>
                             <p>We found and corrected some spelling or grammar errors in your text.</p>
@@ -72,12 +75,15 @@
                     </div>
 
                     <div th:if="${response != null and response.isCorrect}"
-                         class="mt-4 p-4 rounded"
+                         class="mt-4 p-4 rounded position-relative"
                          style="background-color: #6aefcf;">
-
+                        <button class="clear-results-btn btn btn-outline-secondary btn-sm position-absolute"
+                                style="top: 10px; left: 10px; z-index: 10;">
+                            <i class="fas fa-times"></i> Clear Results
+                        </button>
                         <div class="mb-3">
                             <h5>Text Analysis Complete</h5>
-                            <p>We didn't found spelling or grammar errors in your text.</p>
+                            <p>We didn't find spelling or grammar errors in your text.</p>
                         </div>
 
                         <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
@@ -101,38 +107,26 @@
             const resultContainer = document.getElementById('resultContainer');
 
             form.addEventListener('submit', function() {
-                const fileInput = document.getElementById('documentFile');
-                if (fileInput.files.length > 0) {
-                    resultContainer.style.display = 'none';
-                    spinner.style.display = 'block';
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = 'Processing...';
-                }
+                resultContainer.style.display = 'none';
+                spinner.style.display = 'block';
+                submitButton.disabled = true;
+                submitButton.innerHTML = 'Processing text...';
             });
-
-            const clearResultsButton = document.getElementById('clearResultsButton');
-            if (clearResultsButton) {
-                clearResultsButton.addEventListener('click', function () {
-                    while (resultContainer.firstChild) {
-                        resultContainer.removeChild(resultContainer.firstChild);
-                    }
-                    resultContainer.style.display = 'none';
-
-                    const fileInput = document.getElementById('documentFile');
-                    if (fileInput) {
-                        fileInput.value = '';
-                    }
-                });
-            }
         });
 
+        document.addEventListener('click', function(e) {
+            if (e.target && (e.target.classList.contains('clear-results-btn') || e.target.closest('.clear-results-btn'))) {
+                const resultContainer = document.getElementById('resultContainer');
+                while (resultContainer.firstChild) {
+                    resultContainer.removeChild(resultContainer.firstChild);
+                }
+                resultContainer.style.display = 'none';
+
+                const textInput = document.getElementById('textInput');
+                if (textInput) {
+                    textInput.value = '';
+                }
+            }
+        });
     </script>
 </th:block>
-
-
-
-
-
-
-
-
