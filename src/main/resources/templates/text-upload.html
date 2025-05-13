@@ -36,55 +36,97 @@
                     </button>
                 </form>
 
-                <div th:if="${response != null and !response.isCorrect}"
-                     class="mt-4 p-4 rounded"
-                     style="background-color: #6aefcf;">
-
-                    <div class="mb-3">
-                        <h5>Text Analysis Complete</h5>
-                        <p>We found and corrected some spelling or grammar errors in your text.</p>
+                <div id="loadingSpinner" style="display: none;" class="text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Processing text...</span>
                     </div>
-
-                    <div class="card border-0 shadow-none mb-3" style="background-color: #ff5a79;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${originalText}"></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${response.correctedText}"></pre>
-                            </div>
-                        </div>
-                    </div>
-
+                    <p class="mt-2">Processing your text. Please wait...</p>
                 </div>
 
-                <div th:if="${response != null and response.isCorrect}"
-                     class="mt-4 p-4 rounded"
-                     style="background-color: #6aefcf;">
+                <div id="resultContainer">
+                    <div th:if="${response != null and !response.isCorrect}"
+                         class="mt-4 p-4 rounded"
+                         style="background-color: #6aefcf;">
 
-                    <div class="mb-3">
-                        <h5>Text Analysis Complete</h5>
-                        <p>We didn't found spelling or grammar errors in your text.</p>
-                    </div>
+                        <div class="mb-3">
+                            <h5>Text Analysis Complete</h5>
+                            <p>We found and corrected some spelling or grammar errors in your text.</p>
+                        </div>
 
-                    <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <div class="ms-2 mt-2">
-                                <pre th:text="${response.correctedText}"></pre>
+                        <div class="card border-0 shadow-none mb-3" style="background-color: #ff5a79;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${originalText}"></pre>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${response.correctedText}"></pre>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                </div>
+                    <div th:if="${response != null and response.isCorrect}"
+                         class="mt-4 p-4 rounded"
+                         style="background-color: #6aefcf;">
 
+                        <div class="mb-3">
+                            <h5>Text Analysis Complete</h5>
+                            <p>We didn't found spelling or grammar errors in your text.</p>
+                        </div>
+
+                        <div class="card border-0 shadow-none" style="background-color: #50d8b6;">
+                            <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                <div class="ms-2 mt-2">
+                                    <pre th:text="${response.correctedText}"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uploadForm');
+            const spinner = document.getElementById('loadingSpinner');
+            const submitButton = document.getElementById('submitButton');
+            const resultContainer = document.getElementById('resultContainer');
+
+            form.addEventListener('submit', function() {
+                const fileInput = document.getElementById('documentFile');
+                if (fileInput.files.length > 0) {
+                    resultContainer.style.display = 'none';
+                    spinner.style.display = 'block';
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = 'Processing...';
+                }
+            });
+
+            const clearResultsButton = document.getElementById('clearResultsButton');
+            if (clearResultsButton) {
+                clearResultsButton.addEventListener('click', function () {
+                    while (resultContainer.firstChild) {
+                        resultContainer.removeChild(resultContainer.firstChild);
+                    }
+                    resultContainer.style.display = 'none';
+
+                    const fileInput = document.getElementById('documentFile');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+                });
+            }
+        });
+
+    </script>
 </th:block>
 
 

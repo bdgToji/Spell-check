@@ -13,7 +13,7 @@
                     <span th:text="${error}"></span>
                 </div>
 
-                <form action="/document/upload" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
+                <form id="uploadForm" action="/document/upload" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
                     <div class="w-100 w-md-75 mb-3 text-start">
                         <label for="languageCode" class="form-label">Select language:</label>
                         <select class="form-select mb-3" name="languageCode" id="languageCode">
@@ -31,36 +31,85 @@
                         <input id="documentFile" name="documentFile" type="file" accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                     </div>
 
-                    <button class="btn signup-btn text-white px-5" type="submit">
+                    <button id="submitButton" class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>
                 </form>
 
-                <div th:if="${response != null and response.isCorrect}" class="alert alert-success mt-4" role="alert">
-                    <h5>Document Analysis Complete</h5>
-                    <p>Your document has no spelling or grammar errors!</p>
+                <div id="loadingSpinner" style="display: none;" class="text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Processing document...</span>
+                    </div>
+                    <p class="mt-2">Processing your document. Please wait...</p>
                 </div>
 
-                <div th:if="${response != null and !response.isCorrect}"
-                     class="mt-4 p-4 rounded"
-                     style="background-color: #6aefcf;">
+                <div id="resultContainer">
+                    <div th:if="${response != null}" class="position-relative">
+                        <button id="clearResultsButton" class="btn btn-outline-secondary btn-sm position-absolute"
+                                style="top: 10px; left: 10px; z-index: 10;">
+                            <i class="fas fa-times"></i> Clear Results
+                        </button>
 
-                    <div class="mb-3">
-                        <h5>Document Analysis Complete</h5>
-                        <p>We found and corrected some spelling or grammar errors in your document.</p>
-                    </div>
+                        <div th:if="${response.isCorrect}" class="alert alert-success mt-4" role="alert">
+                            <h5>Document Analysis Complete</h5>
+                            <p>Your document has no spelling or grammar errors!</p>
+                        </div>
 
-                    <div class="card border-0 shadow-none" style="background-color: transparent;">
-                        <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
-                            <span><strong>Corrected File</strong></span>
-                            <a th:href="@{'/document/download/' + ${response.fileName}}"
-                               class="btn btn signup-btn" th:text="'corrected_' + ${response.fileName}"></a>
+                        <div th:if="${!response.isCorrect}"
+                             class="mt-4 p-4 rounded"
+                             style="background-color: #6aefcf;">
+
+                            <div class="mb-3">
+                                <h5>Document Analysis Complete</h5>
+                                <p>We found and corrected some spelling or grammar errors in your document.</p>
+                            </div>
+
+                            <div class="card border-0 shadow-none" style="background-color: transparent;">
+                                <div class="card-header d-flex justify-content-between align-items-center border-0 p-0">
+                                    <span><strong>Corrected File</strong></span>
+                                    <a th:href="@{'/document/download/' + ${response.fileName}}"
+                                       class="btn btn signup-btn" th:text="'corrected_' + ${response.fileName}"></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uploadForm');
+            const spinner = document.getElementById('loadingSpinner');
+            const submitButton = document.getElementById('submitButton');
+            const resultContainer = document.getElementById('resultContainer');
+
+            form.addEventListener('submit', function() {
+                const fileInput = document.getElementById('documentFile');
+                if (fileInput.files.length > 0) {
+                    resultContainer.style.display = 'none';
+                    spinner.style.display = 'block';
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = 'Processing...';
+                }
+            });
+
+            const clearResultsButton = document.getElementById('clearResultsButton');
+            if (clearResultsButton) {
+                clearResultsButton.addEventListener('click', function () {
+                    while (resultContainer.firstChild) {
+                        resultContainer.removeChild(resultContainer.firstChild);
+                    }
+                    resultContainer.style.display = 'none';
+
+                    const fileInput = document.getElementById('documentFile');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+                });
+            }
+        });
+
+    </script>
 </th:block>
