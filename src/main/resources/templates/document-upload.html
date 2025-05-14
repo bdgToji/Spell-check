@@ -9,10 +9,6 @@
                     ensuring accurate and efficient results every time.
                 </p>
 
-                <div th:if="${error != null}" class="alert alert-danger mb-3" role="alert">
-                    <span th:text="${error}"></span>
-                </div>
-
                 <form id="uploadForm" action="/document/upload" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
                     <div class="w-100 w-md-75 mb-3 text-start">
                         <label for="languageCode" class="form-label">Select language:</label>
@@ -31,10 +27,15 @@
                         <input id="documentFile" name="documentFile" type="file" accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                     </div>
 
+                    <div id="errorContainer" th:if="${error != null}" class="w-100 w-md-75 mb-3 text-center alert alert-danger my-3 alert alert-danger my-3" role="alert">
+                        <span th:text="${error}"></span>
+                    </div>
+
                     <button id="submitButton" class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>
                 </form>
+
 
                 <div id="loadingSpinner" style="display: none;" class="text-center my-4">
                     <div class="spinner-border text-primary" role="status">
@@ -84,6 +85,8 @@
             const spinner = document.getElementById('loadingSpinner');
             const submitButton = document.getElementById('submitButton');
             const resultContainer = document.getElementById('resultContainer');
+            const errorContainer = document.getElementById('errorContainer');
+            const fileInput = document.getElementById('documentFile');
 
             form.addEventListener('submit', function() {
                 const fileInput = document.getElementById('documentFile');
@@ -92,6 +95,14 @@
                     spinner.style.display = 'block';
                     submitButton.disabled = true;
                     submitButton.innerHTML = 'Processing...';
+                }
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    if (errorContainer) {
+                        errorContainer.style.display = 'none';
+                    }
                 }
             });
 

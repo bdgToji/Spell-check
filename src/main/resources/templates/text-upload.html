@@ -21,16 +21,22 @@
                             </option>
                         </select>
                     </div>
+
                     <div class="w-100 w-md-75 mb-3 text-start">
                         <label for="textInput" class="form-label">Enter your text here:</label>
                         <textarea
                                 class="form-control"
                                 name="textInput"
                                 id="textInput"
-                                rows="10"
+                                rows="6"
                                 placeholder="Type or paste your text..."
                         ></textarea>
                     </div>
+
+                    <div id="errorContainer" th:if="${error != null}" class="w-100 w-md-75 mb-3 text-center alert alert-danger my-3 alert alert-danger my-3" role="alert">
+                        <span th:text="${error}"></span>
+                    </div>
+
                     <button id="submitButton" class="btn signup-btn text-white px-5" type="submit">
                         Check
                     </button>
@@ -105,12 +111,25 @@
             const spinner = document.getElementById('loadingSpinner');
             const submitButton = document.getElementById('submitButton');
             const resultContainer = document.getElementById('resultContainer');
+            const textInput = document.getElementById('textInput');
+            const errorContainer = document.getElementById('errorContainer');
 
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(event) {
+                if (textInput.value.trim() === '') {
+                    return;
+                }
                 resultContainer.style.display = 'none';
                 spinner.style.display = 'block';
                 submitButton.disabled = true;
                 submitButton.innerHTML = 'Processing text...';
+            });
+
+            textInput.addEventListener('input', function() {
+                if (textInput.value.length > 0) {
+                    if (errorContainer) {
+                        errorContainer.style.display = 'none';
+                    }
+                }
             });
         });
 
