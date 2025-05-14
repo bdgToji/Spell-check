@@ -43,8 +43,16 @@ public class TextEntryController {
                                   @RequestParam String languageCode,
                                   @AuthenticationPrincipal UserDetails user,
                                   Model model) throws JsonProcessingException {
-        TextEntryResponse response = textEntryService.processTextEntry(textInput,user,languageCode);
         List<Language> languageList = languageCodeService.findAll();
+
+        if (textInput.isEmpty()) {
+            model.addAttribute("error", "Please enter a text for processing");
+            model.addAttribute("languageList",languageList);
+            model.addAttribute("bodyContent", "text-upload");
+            return "master-template";
+        }
+
+        TextEntryResponse response = textEntryService.processTextEntry(textInput,user,languageCode);
 
         model.addAttribute("languageList",languageList);
         model.addAttribute("response", response);

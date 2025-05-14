@@ -12,12 +12,16 @@ import com.example.ai_spell_check.repository.LanguageCodeRepository;
 import com.example.ai_spell_check.repository.TextEntryRepository;
 import com.example.ai_spell_check.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 import static com.example.ai_spell_check.service.specification.FieldFilterSpecification.*;
 
@@ -52,13 +56,25 @@ public class TextEntryService {
         return response;
     }
 
+    public Page<TextEntry> getTextEntriesByUser(User user, Pageable pageable) {
+        return textEntryRepository.findByUser(user, pageable);
+    }
     public Page<TextEntry> findPage(String userId, Integer pageNum, Integer pageSize) {
-        Specification<TextEntry> specification = Specification
-                .where(filterEquals(TextEntry.class, "user.id", userId));
+        Specification<TextEntry> specification = (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("languageCode", JoinType.LEFT);
+                query.distinct(true);
+            }
+            return cb.equal(root.get("user").get("id"), userId);
+        };
 
         return this.textEntryRepository.findAll(
                 specification,
                 PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "creationDate"))
         );
+    }
+
+    public List<TextEntry> find10RecentTextEntriesByUser(User currentUser) {
+        return textEntryRepository.findRecentByUser(currentUser,PageRequest.of(0, 10));
     }
 }
